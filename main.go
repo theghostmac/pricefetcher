@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -8,9 +9,16 @@ import (
 
 func displayHomePage(writer http.ResponseWriter, request *http.Request) {
 	log.Println("Hello from the CLI")
-	data, _ := io.ReadAll(request.Body)
+	data, err := io.ReadAll(request.Body)
+	if err != nil {
+		http.Error(writer, "Oops", http.StatusBadRequest)
+		return	
+	}
 
-	log.Printf("%s\n", data)
+	_, err = fmt.Fprintf(writer, "Data is %s\n", data)
+	if err != nil {
+		fmt.Println("Error writing the writer: ", err)
+	}
 }
 
 func displayExitPage(writer http.ResponseWriter, request *http.Request) {
