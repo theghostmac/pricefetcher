@@ -1,8 +1,11 @@
-// main.go
-
 package main
 
 import (
+	"context"
+	"fmt"
+	"github.com/theghostmac/pricefetcher/common"
+	"github.com/theghostmac/pricefetcher/internal/app"
+	"github.com/theghostmac/pricefetcher/internal/observability"
 	"github.com/theghostmac/pricefetcher/internal/server"
 	"os"
 	"os/signal"
@@ -27,4 +30,15 @@ func main() {
 
 	// Perform graceful shutdown
 	runner.Shutdown()
+
+	service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
+
+	price, err := service.FetchPrice(context.Background(), "ETH")
+	if err != nil {
+		common.LogError(err)
+	}
+	fmt.Println(price)
 }
+
+// main.go checked
+//

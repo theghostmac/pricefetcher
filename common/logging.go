@@ -29,3 +29,7 @@ func (ls *LoggingService) FetchPrice(ctx context.Context, ticker string) (price 
 
 	return ls.next.FetchPrice(ctx, ticker)
 }
+
+func LogError(err error) {
+	logrus.Errorf("Error: %v", err)
+}
