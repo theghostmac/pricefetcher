@@ -26,6 +26,13 @@ Using Makefile to run the application:
 ```makefile
 make run
 ```
+Output:
+```shell
+curl -X GET "http://localhost:8080/?ticker=ETH"
+{"ticker":"ETH","price":1875.91}
+```
+![Works](works.png)
+
 Using Makefile to build the application:
 ```makefile
 make build

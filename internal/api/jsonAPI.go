@@ -13,7 +13,7 @@ type APIFunc func(ctx context.Context, writer http.ResponseWriter, request *http
 
 type JSONAPIServer struct {
 	server.StartRunner
-	service app.PriceFetcher
+	Service app.PriceFetcher // Use the field name "Service" instead of "service"
 }
 
 type PriceResponse struct {
@@ -21,15 +21,13 @@ type PriceResponse struct {
 	Price  float64 `json:"price"`
 }
 
-func (js *JSONAPIServer) NewJSONAPIServer( /*listenAddr server.StartRunner,*/ service app.PriceFetcher) *JSONAPIServer {
-	return &JSONAPIServer{
-		StartRunner: server.StartRunner{},
-		service:     service,
-	}
-}
-
 func (js *JSONAPIServer) Run() {
 	http.HandleFunc("/", MakeHTTPHandlerFunc(js.HandleFetchPrice))
+	// Start the HTTP server.
+	err := http.ListenAndServe(js.ListenAddr, nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
@@ -38,7 +36,7 @@ func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := apiFn(ctx, writer, request); err != nil {
-			WriteJSON(writer, http.StatusBadRequest, map[string]any{"error": err.Error()})
+			WriteJSON(writer, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 		}
 	}
 }
@@ -46,7 +44,7 @@ func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
 func (js *JSONAPIServer) HandleFetchPrice(ctx context.Context, writer http.ResponseWriter, request *http.Request) error {
 	ticker := request.URL.Query().Get("ticker")
 
-	price, err := js.service.FetchPrice(ctx, ticker)
+	price, err := js.Service.FetchPrice(ctx, ticker)
 	if err != nil {
 		return err
 	}
@@ -58,7 +56,7 @@ func (js *JSONAPIServer) HandleFetchPrice(ctx context.Context, writer http.Respo
 	return WriteJSON(writer, http.StatusOK, &priceResponse)
 }
 
-func WriteJSON(writer http.ResponseWriter, status int, value any) error {
+func WriteJSON(writer http.ResponseWriter, status int, value interface{}) error {
 	writer.WriteHeader(status)
 	return json.NewEncoder(writer).Encode(value)
 }
