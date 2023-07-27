@@ -11,6 +11,13 @@ type LoggingService struct {
 	next app.PriceFetcher
 }
 
+// NewLoggingService is a new logging service for PriceFetcher.
+func NewLoggingService(srv app.PriceFetcher) app.PriceFetcher {
+	return &LoggingService{
+		next: srv,
+	}
+}
+
 func (ls *LoggingService) FetchPrice(ctx context.Context, ticker string) (price float64, err error) {
 	defer func(begin time.Time) {
 		logrus.WithFields(logrus.Fields{
