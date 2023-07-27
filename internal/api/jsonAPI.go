@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/theghostmac/pricefetcher/internal/app"
+	"github.com/theghostmac/pricefetcher/internal/server"
 	"math/rand"
 	"net/http"
 )
@@ -11,6 +12,7 @@ import (
 type APIFunc func(ctx context.Context, writer http.ResponseWriter, request *http.Request) error
 
 type JSONAPIServer struct {
+	server.StartRunner
 	service app.PriceFetcher
 }
 
@@ -19,8 +21,15 @@ type PriceResponse struct {
 	Price  float64 `json:"price"`
 }
 
+func (js *JSONAPIServer) NewJSONAPIServer( /*listenAddr server.StartRunner,*/ service app.PriceFetcher) *JSONAPIServer {
+	return &JSONAPIServer{
+		StartRunner: server.StartRunner{},
+		service:     service,
+	}
+}
+
 func (js *JSONAPIServer) Run() {
-	http.HandleFunc("/")
+	http.HandleFunc("/", MakeHTTPHandlerFunc(js.HandleFetchPrice))
 }
 
 func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
