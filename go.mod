@@ -1,3 +1,3 @@
-module github.com/theghostmac/micro-go
+module github.com/theghostmac/pricefetcher
 
 go 1.20
