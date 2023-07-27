@@ -4,7 +4,7 @@ BINARY      := myapp
 SRC_DIR     := cmd
 SRC         := $(wildcard $(SRC_DIR)/*.go)
 LDFLAGS     := -ldflags="-s -w"
-TEST_DIR    := internal
+TEST_DIR    := tests/unit
 COVERAGE    := coverage.out
 
 # Build the application
@@ -16,7 +16,7 @@ clean:
 	rm -f $(BINARY)
 
 # Run the application
-run: build
+run: clean build
 	./$(BINARY)
 
 # Run tests
