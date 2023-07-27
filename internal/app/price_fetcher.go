@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// PriceFetcher is an interface for functions related to FetchPrice service.
 type PriceFetcher interface {
 	FetchPrice(context.Context, string) (float64, error)
 }
@@ -15,11 +16,12 @@ var SimulatedPrice = map[string]float64{
 	"XRP": 0.7162,
 }
 
+// PriceFetched is a struct containing the fetched prices from PriceFetcher services.
 type PriceFetched struct {
 }
 
 func (pf PriceFetched) FetchPrice(ctx context.Context, ticker string) (float64, error) {
-	return 0, nil
+	return SimulatedPriceFetcher(ctx, ticker)
 }
 
 func SimulatedPriceFetcher(ctx context.Context, ticker string) (float64, error) {
