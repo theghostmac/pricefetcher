@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/theghostmac/pricefetcher/common"
 	"github.com/theghostmac/pricefetcher/internal/api"
@@ -14,6 +15,9 @@ import (
 )
 
 func main() {
+	listenAddr := flag.String("listenaddr", ":8080", "listening on the default port")
+	flag.Parse()
+
 	// Create an instance of PriceFetched as the mock PriceFetcher implementation.
 	priceFetcher := &app.PriceFetched{}
 
@@ -26,7 +30,7 @@ func main() {
 	// Create an instance of JSONAPIServer with the desired ListenAddr and service.
 	apiServer := &api.JSONAPIServer{
 		StartRunner: server.StartRunner{
-			ListenAddr: "localhost:8080", // Change this to the address where you want your server to listen.
+			ListenAddr: *listenAddr, // Change this to the address where you want your server to listen.
 		},
 		Service: metricsService,
 	}
