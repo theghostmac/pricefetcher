@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 // PriceFetcher is an interface for functions related to FetchPrice service.
@@ -25,6 +26,8 @@ func (pf PriceFetched) FetchPrice(ctx context.Context, ticker string) (float64, 
 }
 
 func SimulatedPriceFetcher(ctx context.Context, ticker string) (float64, error) {
+	// Mimic the HTTP roundtrip
+	time.Sleep(100 * time.Millisecond)
 	price, ok := SimulatedPrice[ticker]
 	if !ok {
 		return price, fmt.Errorf("the given ticker (%s) is not supported", ticker)
