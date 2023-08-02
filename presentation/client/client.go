@@ -1,6 +1,9 @@
 package client
 
-import "context"
+import (
+	"context"
+	"github.com/theghostmac/pricefetcher/internal/domain"
+)
 
 type Client struct {
 	endpoint string
@@ -12,6 +15,6 @@ func NewClient(endpoint string) *Client {
 	}
 }
 
-func (c *Client) FetchPrice(ctx context.Context, ticker string) {
-
+func (c *Client) FetchPrice(ctx context.Context, ticker string) (*domain.PriceResponse, error) {
+	return nil, nil
 }
