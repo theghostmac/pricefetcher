@@ -26,7 +26,7 @@ func (pf PriceFetched) FetchPrice(ctx context.Context, ticker string) (float64, 
 }
 
 func SimulatedPriceFetcher(ctx context.Context, ticker string) (float64, error) {
-	// Mimic the HTTP roundtrip
+	// Mimic the HTTP round-trip
 	time.Sleep(100 * time.Millisecond)
 	price, ok := SimulatedPrice[ticker]
 	if !ok {
