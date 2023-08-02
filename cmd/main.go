@@ -9,13 +9,17 @@ import (
 	"github.com/theghostmac/pricefetcher/internal/app"
 	"github.com/theghostmac/pricefetcher/internal/observability"
 	"github.com/theghostmac/pricefetcher/internal/server"
+	"github.com/theghostmac/pricefetcher/presentation/client"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
 func main() {
-	listenAddr := flag.String("listenaddr", ":8080", "listening on the default port")
+	// Create a new client to receive data from the server.
+	client, err := client.NewClient("http://localhost:3000")
+
+	listenAddr := flag.String("listenAddress", ":8080", "listening on the default port")
 	flag.Parse()
 
 	// Create an instance of PriceFetched as the mock PriceFetcher implementation.
@@ -45,9 +49,6 @@ func main() {
 
 	// Perform graceful shutdown
 	apiServer.Shutdown()
-
-	// Note: Since the JSONAPIServer is running in a separate goroutine, we will not wait for it to finish.
-	// If you need to wait for the server to finish, you can add additional synchronization mechanisms.
 
 	service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
 
