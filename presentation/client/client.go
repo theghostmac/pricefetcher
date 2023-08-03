@@ -12,10 +12,10 @@ type Client struct {
 	endpoint string
 }
 
-func NewClient(endpoint string) (*Client, error) {
+func NewClient(endpoint string) *Client {
 	return &Client{
 		endpoint: endpoint,
-	}, nil
+	}
 }
 
 func (c *Client) FetchPrice(ctx context.Context, ticker string) (*domain.PriceResponse, error) {

@@ -21,7 +21,6 @@ Using Golang
 1. Build the application: `go build -o myapp cmd/main.go`
 2. Run the application: `./myapp`
 
-
 Using Makefile to run the application:
 ```makefile
 make run
@@ -58,4 +57,3 @@ We welcome contributions! If you'd like to contribute to the project, please fol
 3. Make your changes and commit them.
 4. Push your changes to your forked repository.
 5. Submit a pull request to the main repository.
-

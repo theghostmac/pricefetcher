@@ -17,7 +17,8 @@ import (
 
 func main() {
 	// Create a new client to receive data from the server.
-	client, err := client.NewClient("http://localhost:3000")
+	newClient := client.NewClient("http://localhost:3000")
+	//service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
 
 	listenAddr := flag.String("listenAddress", ":8080", "listening on the default port")
 	flag.Parse()
@@ -50,11 +51,9 @@ func main() {
 	// Perform graceful shutdown
 	apiServer.Shutdown()
 
-	service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
-
-	price, err := service.FetchPrice(context.Background(), "ETH")
+	price, err := newClient.FetchPrice(context.Background(), "ETH")
 	if err != nil {
 		common.LogError(err)
 	}
-	fmt.Println(price)
+	fmt.Printf("%+v\n", price)
 }
