@@ -17,7 +17,7 @@ import (
 
 func main() {
 	// Create a new client to receive data from the server.
-	newClient := client.NewClient("http://localhost:3000")
+	newClient := client.NewClient("http://localhost:8080")
 	//service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
 
 	listenAddr := flag.String("listenAddress", ":8080", "listening on the default port")
