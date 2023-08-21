@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "pricefetcher_deployment" {
       spec {
         container {
           name = "var.docker_image_url"
-          name = "pricefetcher"
+          # name = "pricefetcher"
 
           port {
             container_port = 50051
