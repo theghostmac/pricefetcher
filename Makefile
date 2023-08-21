@@ -19,6 +19,11 @@ clean:
 run: clean build
 	./$(BINARY)
 
+proto:
+	protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    proto/service.proto
+
 # Run tests
 test:
 	$(GO) test -v ./$(TEST_DIR)/...
@@ -40,4 +45,4 @@ coverage:
 	$(GO) test -coverprofile=$(COVERAGE) ./$(TEST_DIR)/...
 	$(GO) tool cover -func=$(COVERAGE)
 
-.PHONY: build clean run test format lint vet coverage
+.PHONY: build clean run proto test format lint vet coverage
