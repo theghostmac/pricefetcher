@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+// package pricefetcher;
+
+option go_package = "github.com/theghostmac/pricefetcher/proto";
+
 service PriceFetcher {
     rpc FetchPrice(PriceRequest) returns (PriceResponse);
 }
