@@ -10,6 +10,12 @@ import (
 	"net/http"
 )
 
+type contextKey string
+
+const (
+	requestIDKey contextKey = "requestID"
+)
+
 type APIFunc func(ctx context.Context, writer http.ResponseWriter, request *http.Request) error
 
 type JSONAPIServer struct {
@@ -28,7 +34,7 @@ func (js *JSONAPIServer) Run() {
 
 func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
 	ctxBg := context.Background()
-	ctx := context.WithValue(ctxBg, "requestID", rand.Intn(100000000))
+	ctx := context.WithValue(ctxBg, requestIDKey, rand.Intn(100000000))
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := apiFn(ctx, writer, request); err != nil {
