@@ -32,7 +32,10 @@ func MakeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := apiFn(ctx, writer, request); err != nil {
-			WriteJSON(writer, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+			err := WriteJSON(writer, http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+			if err != nil {
+				return
+			}
 		}
 	}
 }
