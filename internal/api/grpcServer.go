@@ -21,15 +21,11 @@ func MakeAndRunGRPCServer(listenAddr string, service app.PriceFetcher) error {
 		return err
 	}
 
-	options := []grpc.ServerOption{}
+	var options []grpc.ServerOption
 	server := grpc.NewServer(options...)
 	proto.RegisterPriceFetcherServer(server, grpcPriceFetcher)
-	err = server.Serve(listener)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return server.Serve(listener)
 }
 
 func NewGRPCPriceFetcher(service app.PriceFetcher) *GRPCPriceFetcherServer {

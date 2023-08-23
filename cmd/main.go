@@ -9,51 +9,60 @@ import (
 	"github.com/theghostmac/pricefetcher/internal/app"
 	"github.com/theghostmac/pricefetcher/internal/observability"
 	"github.com/theghostmac/pricefetcher/internal/server"
-	"github.com/theghostmac/pricefetcher/presentation/client"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
 func main() {
-	// Create a new client to receive data from the server.
-	newClient := client.NewClient("http://localhost:8080")
-	//service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
+	service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
 
-	listenAddr := flag.String("listenAddress", ":8080", "listening on the default port")
+	var (
+		jsonListenAddr = flag.String("listenAddress", ":8080", "Listen address of the JSON transport")
+		grpcListenAddr = flag.String("grpcListenAddr", ":4000", "Listen address of the GRPC transport")
+	)
 	flag.Parse()
 
 	// Create an instance of PriceFetched as the mock PriceFetcher implementation.
 	priceFetcher := &app.PriceFetched{}
 
-	// Create a new LoggingService wrapping the PriceFetcher.
-	loggingService := common.NewLoggingService(priceFetcher)
-
-	// Create a new MetricsService wrapping the LoggingService.
-	metricsService := observability.NewMetricsService(loggingService)
+	// Create a new MetricsService wrapping the PriceFetcher.
+	metricsService := observability.NewMetricsService(priceFetcher)
 
 	// Create an instance of JSONAPIServer with the desired ListenAddr and service.
-	apiServer := &api.JSONAPIServer{
+	jsonServer := &api.JSONAPIServer{
 		StartRunner: server.StartRunner{
-			ListenAddr: *listenAddr, // Change this to the address where you want your server to listen.
+			ListenAddr: *jsonListenAddr,
 		},
 		Service: metricsService,
 	}
 
-	// Call the Run method to start the server.
-	go apiServer.Run()
+	// Create an instance of the GRPCServer with the desired ListenAddr and service.
+	go func() {
+		err := api.MakeAndRunGRPCServer(*grpcListenAddr, priceFetcher)
+		if err != nil {
+			common.LogError(err)
+		}
+	}()
 
 	// Setup graceful shutdown using SIGINT (Ctrl+C) and SIGTERM signals.
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Fetch the price before starting the shutdown process
+	price, err := service.FetchPrice(context.Background(), "ETH")
+	if err != nil {
+		common.LogError(err)
+	} else {
+		fmt.Printf("%+v\n", price)
+	}
+
+	// Start the JSON server
+	go jsonServer.Run()
+
+	// Wait for the shutdown signal
 	<-stopChan
 
 	// Perform graceful shutdown
-	apiServer.Shutdown()
-
-	price, err := newClient.FetchPrice(context.Background(), "ETH")
-	if err != nil {
-		common.LogError(err)
-	}
-	fmt.Printf("%+v\n", price)
+	jsonServer.Shutdown()
 }
