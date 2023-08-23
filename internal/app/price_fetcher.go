@@ -41,7 +41,7 @@ func SimulatedPriceFetcher(ctx context.Context, ticker string) (float64, error) 
 const coinMarketCapAPIBaseURL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
 
 type FetchPriceFromCoinMarketCap struct {
-	APIKey string // CoinMarketCap API key here.
+	APIKey string
 }
 
 func NewFetchPriceFromCoinMarketCap(apiKey string) *FetchPriceFromCoinMarketCap {
