@@ -9,17 +9,20 @@ import (
 	"github.com/theghostmac/pricefetcher/internal/app"
 	"github.com/theghostmac/pricefetcher/internal/observability"
 	"github.com/theghostmac/pricefetcher/internal/server"
+	"github.com/theghostmac/pricefetcher/presentation/client"
+	"github.com/theghostmac/pricefetcher/proto"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
 func main() {
-	service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
+	//service := common.NewLoggingService(observability.NewMetricsService(&app.PriceFetched{}))
 
 	var (
 		jsonListenAddr = flag.String("listenAddress", ":8080", "Listen address of the JSON transport")
 		grpcListenAddr = flag.String("grpcListenAddr", ":4000", "Listen address of the GRPC transport")
+		//ctx            = context.Background()
 	)
 	flag.Parse()
 
@@ -49,13 +52,31 @@ func main() {
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Fetch the price before starting the shutdown process
-	price, err := service.FetchPrice(context.Background(), "ETH")
+	// Create a new client instance for fetching price.
+	grpcClient, err := client.NewGRPCClient(*grpcListenAddr)
+	if err != nil {
+		common.LogError(err)
+	}
+
+	// Fetch the price using the GRPC client.
+	grpcPriceResponse, err := grpcClient.FetchPrice(context.Background(), &proto.PriceRequest{
+		Ticker: "ETH",
+	})
 	if err != nil {
 		common.LogError(err)
 	} else {
-		fmt.Printf("%+v\n", price)
+		fmt.Printf("GRPC Price Response: %+v\n", grpcPriceResponse)
 	}
+	// Reimplementation with Go Routine in case there's issue.
+	//go func() {
+	//	time.Sleep(3 * time.Second)
+	//	grpcPriceResponse, err := grpcClient.FetchPrice(ctx, &proto.PriceRequest{Ticker: "BTC"})
+	//	if err != nil {
+	//		common.LogError(err)
+	//	}
+	//
+	//	fmt.Printf("%+v", grpcPriceResponse)
+	//}()
 
 	// Start the JSON server
 	go jsonServer.Run()
