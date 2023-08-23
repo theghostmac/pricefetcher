@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/theghostmac/pricefetcher/common"
 	"github.com/theghostmac/pricefetcher/internal/domain"
+	"github.com/theghostmac/pricefetcher/proto"
+	"google.golang.org/grpc"
 	"net/http"
 )
 
@@ -16,6 +19,15 @@ func NewClient(endpoint string) *Client {
 	return &Client{
 		endpoint: endpoint,
 	}
+}
+
+func NewGRPCClient(remoteAddr string) (proto.PriceFetcherClient, error) {
+	connection, err := grpc.Dial(remoteAddr, grpc.WithInsecure())
+	if err != nil {
+		common.LogError(err)
+	}
+	client := proto.NewPriceFetcherClient(connection)
+	return client, nil
 }
 
 func (c *Client) FetchPrice(ctx context.Context, ticker string) (*domain.PriceResponse, error) {
