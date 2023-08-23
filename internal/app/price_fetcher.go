@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/theghostmac/pricefetcher/common"
 	"io"
 	"net/http"
 	"strconv"
@@ -87,7 +86,7 @@ func (fpfcmc *FetchPriceFromCoinMarketCap) CoinMarketCapPriceFetcher(ctx context
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			common.LogError(err)
+			return
 		}
 	}(resp.Body)
 
