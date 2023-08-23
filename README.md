@@ -47,13 +47,3 @@ The project supports configuration via environment variables. You can customize 
 
 - `MYAPP_PORT`: Set the port number on which the application listens. Default is 8080.
 - `MYAPP_DEBUG`: Set to "true" to enable debug mode. Default is "false".
-
-## Contributing
-
-We welcome contributions! If you'd like to contribute to the project, please follow these steps:
-
-1. Fork the repository on GitHub.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them.
-4. Push your changes to your forked repository.
-5. Submit a pull request to the main repository.
