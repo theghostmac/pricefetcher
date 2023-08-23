@@ -22,7 +22,7 @@ Using Golang
 2. Run the application: `./myapp`
 
 Using Makefile to run the application:
-```makefile
+```shell
 make run
 ```
 Output:

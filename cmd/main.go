@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -59,24 +60,17 @@ func main() {
 	}
 
 	// Fetch the price using the GRPC client.
-	grpcPriceResponse, err := grpcClient.FetchPrice(context.Background(), &proto.PriceRequest{
-		Ticker: "ETH",
-	})
-	if err != nil {
-		common.LogError(err)
-	} else {
-		fmt.Printf("GRPC Price Response: %+v\n", grpcPriceResponse)
-	}
-	// Reimplementation with Go Routine in case there's issue.
-	//go func() {
-	//	time.Sleep(3 * time.Second)
-	//	grpcPriceResponse, err := grpcClient.FetchPrice(ctx, &proto.PriceRequest{Ticker: "BTC"})
-	//	if err != nil {
-	//		common.LogError(err)
-	//	}
-	//
-	//	fmt.Printf("%+v", grpcPriceResponse)
-	//}()
+	go func() {
+		time.Sleep(3 * time.Second)
+		grpcPriceResponse, err := grpcClient.FetchPrice(context.Background(), &proto.PriceRequest{
+			Ticker: "ETH",
+		})
+		if err != nil {
+			common.LogError(err)
+		} else {
+			fmt.Printf("GRPC Price Response: %+v\n", grpcPriceResponse)
+		}
+	}()
 
 	// Start the JSON server
 	go jsonServer.Run()

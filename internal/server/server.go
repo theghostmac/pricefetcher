@@ -40,8 +40,10 @@ func (server *GracefulShutdown) Shutdown() {
 	logrus.Info("Shutting down server...")
 
 	// Gracefully shutdown the server
-	if err := server.httpServer.Shutdown(nil); err != nil {
-		logrus.Errorf("Error during server shutdown: %v", err)
+	if server.httpServer != nil {
+		if err := server.httpServer.Shutdown(nil); err != nil {
+			logrus.Errorf("Error shutting down server: %+v\n", err)
+		}
 	}
 
 	logrus.Info("Server shutdown complete.")
