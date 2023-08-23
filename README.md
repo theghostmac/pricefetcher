@@ -1,9 +1,9 @@
 # Price Fetcher Microservice
-pricefetcher is a microservice application that fetches the price of different cryptocurrencies in real-time. 
-My main goal is to just use gRPC in development.
+Pricefetcher is a microservice application that fetches the price of different cryptocurrencies in real-time. 
+My main goal is to just use gRPC in communication.
 
 ## Features
-I'm trying out the following to remember stuff as I apply actively for jobs.
+I'm trying out the following technologies
 - JSON API
 - GRPC
 - Context
@@ -25,7 +25,7 @@ Using Makefile to run the application:
 ```shell
 make run
 ```
-Output:
+You can fetch any price among BTC or ETH like this:
 ```shell
 curl -X GET "http://localhost:8080/?ticker=ETH"
 {"ticker":"ETH","price":1875.91}
@@ -33,13 +33,17 @@ curl -X GET "http://localhost:8080/?ticker=ETH"
 ![Works](works.png)
 
 Using Makefile to build the application:
-```makefile
+```shell
 make build
 ```
 Clean up the binary after you finish:
-```makefile
+```shell
 make clean
 ```
+
+While this uses simulated price, I have written the logic to fetch real-time price from
+CoinMarketCap, however, the goal of the project is not to do that, but to master the
+usage of gRPC as a client and server.
 
 ## Configuration
 
