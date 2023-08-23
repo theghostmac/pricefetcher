@@ -61,14 +61,16 @@ func main() {
 
 	// Fetch the price using the GRPC client.
 	go func() {
-		time.Sleep(3 * time.Second)
-		grpcPriceResponse, err := grpcClient.FetchPrice(context.Background(), &proto.PriceRequest{
-			Ticker: "ETH",
-		})
-		if err != nil {
-			common.LogError(err)
-		} else {
-			fmt.Printf("GRPC Price Response: %+v\n", grpcPriceResponse)
+		for {
+			time.Sleep(3 * time.Second)
+			grpcPriceResponse, err := grpcClient.FetchPrice(context.Background(), &proto.PriceRequest{
+				Ticker: "ETH",
+			})
+			if err != nil {
+				common.LogError(err)
+			} else {
+				fmt.Printf("GRPC Price Response: %+v\n", grpcPriceResponse)
+			}
 		}
 	}()
 

@@ -2,7 +2,10 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -18,8 +21,7 @@ var SimulatedPrice = map[string]float64{
 }
 
 // PriceFetched is a struct containing the fetched prices from PriceFetcher services.
-type PriceFetched struct {
-}
+type PriceFetched struct{}
 
 func (pf PriceFetched) FetchPrice(ctx context.Context, ticker string) (float64, error) {
 	return SimulatedPriceFetcher(ctx, ticker)
@@ -33,4 +35,56 @@ func SimulatedPriceFetcher(ctx context.Context, ticker string) (float64, error) 
 		return price, fmt.Errorf("the given ticker (%s) is not supported", ticker)
 	}
 	return price, nil
+}
+
+const binanceAPIBaseURl = "https://api.binance.com/api/v3/ticker/price"
+
+type FetchPriceFromBinance struct {
+	APIKey string // Binance API key here.
+}
+
+func NewFetchPriceFromBinance(apiKey string) *FetchPriceFromBinance {
+	return &FetchPriceFromBinance{
+		APIKey: apiKey,
+	}
+}
+
+func (fpfb *FetchPriceFromBinance) FetchPrice(ctx context.Context, ticker string) (float64, error) {
+	return fpfb.BinancePriceFetcher(ctx, ticker)
+}
+
+type BinancePriceResponse struct {
+	Symbol string `json:symbol`
+	Price  string `json:price`
+}
+
+func (fpfb *FetchPriceFromBinance) BinancePriceFetcher(ctx context.Context, ticker string) (float64, error) {
+	client := &http.Client{}
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s?symbol=%sUSDT", binanceAPIBaseURl, ticker), nil)
+	if err != nil {
+		return 0, err
+	}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return 0, err
+	}
+	defer response.Body.Close()
+
+	var priceResponse BinancePriceResponse
+	err = json.NewDecoder(response.Body).Decode(&priceResponse)
+	if err != nil {
+		return 0, err
+	}
+
+	price, err := ParseFloat(priceResponse.Price)
+	if err != nil {
+		return 0, err
+	}
+
+	return price, nil
+}
+
+func ParseFloat(input string) (float64, error) {
+	return strconv.ParseFloat(input, 64)
 }

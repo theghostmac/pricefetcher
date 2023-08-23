@@ -5,6 +5,7 @@ import (
 	"github.com/theghostmac/pricefetcher/internal/app"
 	"github.com/theghostmac/pricefetcher/proto"
 	"google.golang.org/grpc"
+	"math/rand"
 	"net"
 )
 
@@ -35,6 +36,8 @@ func NewGRPCPriceFetcher(service app.PriceFetcher) *GRPCPriceFetcherServer {
 }
 
 func (grpcs *GRPCPriceFetcherServer) FetchPrice(ctx context.Context, request *proto.PriceRequest) (*proto.PriceResponse, error) {
+	requestID := rand.Intn(10000)
+	ctx = context.WithValue(ctx, "requestID", requestID)
 	price, err := grpcs.service.FetchPrice(ctx, request.Ticker)
 	if err != nil {
 		return nil, err
